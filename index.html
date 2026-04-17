@@ -102,7 +102,12 @@ parts:[
 
 const data = await response.json();
 
-const respuesta = data.candidates[0].content.parts[0].text;
+let respuesta = "No se pudo obtener respuesta.";
+
+if(data.candidates && data.candidates.length > 0){
+respuesta = data.candidates[0].content.parts[0].text;
+}
+
 
 chat.innerHTML += "<p class='mensajeIA'><b>IA:</b> "+respuesta+"</p>";
 
