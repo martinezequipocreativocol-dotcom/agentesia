@@ -1,33 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Martinez Equipo Creativo</title>
+<title>Martinez Equipo Creativo - IA</title>
+
 <style>
 
 body{
-font-family: Arial;
-text-align:center;
-padding:40px;
+font-family:Arial;
 background:#0f172a;
 color:white;
+text-align:center;
+padding:40px;
 }
 
-input{
+select,input,button{
 padding:10px;
-width:300px;
+margin:10px;
 }
 
-button{
-padding:10px;
-background:#f59e0b;
-border:none;
-color:white;
-cursor:pointer;
+#chat{
+margin-top:30px;
+max-width:600px;
+margin-left:auto;
+margin-right:auto;
+text-align:left;
 }
 
-#respuesta{
-margin-top:20px;
-font-size:18px;
+.mensajeUsuario{
+color:#fbbf24;
+}
+
+.mensajeIA{
+color:#38bdf8;
 }
 
 </style>
@@ -35,34 +39,61 @@ font-size:18px;
 
 <body>
 
-<h1>Asesor IA de Marketing</h1>
-<p>Haz una pregunta sobre tu negocio</p>
+<h1>Agentes IA - Martinez Equipo Creativo</h1>
+
+<select id="agente">
+<option value="marketing">Estratega de Marketing</option>
+<option value="diagnostico">Diagnóstico de Negocio</option>
+<option value="ventas">Asesor Comercial</option>
+</select>
+
+<br>
 
 <input id="pregunta" placeholder="Escribe tu pregunta">
 
 <button onclick="preguntar()">Enviar</button>
 
-<p id="respuesta"></p>
+<div id="chat"></div>
 
 <script>
 
+const prompts = {
+
+marketing:`Eres un estratega digital experto de Martinez Equipo Creativo.
+Ayudas a emprendedores a mejorar su marketing digital.`,
+
+diagnostico:`Eres consultor de negocios de Martinez Equipo Creativo.
+Analiza problemas de marketing y ventas.`,
+
+ventas:`Eres asesor comercial de Martinez Equipo Creativo.
+Tu objetivo es convertir visitantes en clientes.`
+
+};
+
 async function preguntar(){
 
-const pregunta = document.getElementById("pregunta").value;
+const preguntaUsuario = document.getElementById("pregunta").value;
+
+const agente = document.getElementById("agente").value;
+
+const promptCompleto = prompts[agente] + "\nPregunta del usuario: " + preguntaUsuario;
+
+const chat = document.getElementById("chat");
+
+chat.innerHTML += "<p class='mensajeUsuario'><b>Usuario:</b> "+preguntaUsuario+"</p>";
 
 const response = await fetch(
-"AQ.Ab8RN6KN2GRRpMX_uF27Bu0giqgSakeOYEGgJPH6TGeRe2JBVw",
+"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AQ.Ab8RN6KN2GRRpMX_uF27Bu0giqgSakeOYEGgJPH6TGeRe2JBVw",
 {
 method:"POST",
 headers:{
 "Content-Type":"application/json"
 },
-
 body:JSON.stringify({
 contents:[
 {
 parts:[
-{text: pregunta}
+{text: promptCompleto}
 ]
 }
 ]
@@ -71,8 +102,9 @@ parts:[
 
 const data = await response.json();
 
-document.getElementById("respuesta").innerText =
-data.candidates[0].content.parts[0].text;
+const respuesta = data.candidates[0].content.parts[0].text;
+
+chat.innerHTML += "<p class='mensajeIA'><b>IA:</b> "+respuesta+"</p>";
 
 }
 
